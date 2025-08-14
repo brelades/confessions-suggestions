@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const store = require('../utils/suggestionStore');
 
 const MOD_ROLES = process.env.MOD_ROLES.split(',');
-const LOG_CHANNEL_ID = '1402702487307419678'; // your log channel id
+const LOG_CHANNEL_ID = = process.env.SUGGESTION_LOG_CHANNEL_ID;
 const SUGGESTION_CHANNEL_ID = process.env.SUGGESTION_CHANNEL_ID;
 
 module.exports = {
