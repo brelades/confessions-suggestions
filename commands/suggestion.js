@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const store = require('../utils/suggestionStore');
 
 const MOD_ROLES = process.env.MOD_ROLES.split(',');
-const LOG_CHANNEL_ID = = process.env.SUGGESTION_LOG_CHANNEL_ID;
+const LOG_CHANNEL_ID = process.env.SUGGESTION_LOG_CHANNEL_ID;
 const SUGGESTION_CHANNEL_ID = process.env.SUGGESTION_CHANNEL_ID;
 
 module.exports = {
@@ -78,44 +78,47 @@ module.exports = {
       await msg.edit({ embeds: [updatedEmbed] });
       await store.updateStatus(id, statusText);
 
+      await msg.reactions.removeAll().catch(() => null);
+
       await logChannel.send({
         content: `Suggestion \`${id}\` was ${statusText} by **${interaction.user.tag}**.\nReason: ${reason}`,
         embeds: [updatedEmbed]
       });
 
-if (user) {
-  try {
-    await user.send({
-      content: `Your suggestion (\`${id}\`) has been **${statusText}** in ${interaction.guild.name}.\n[Jump to suggestion](${msg.url})`,
-      embeds: [msg.embeds[0]]
-    });
-  } catch {
-  }
-}
+      if (user) {
+        try {
+          await user.send({
+            content: `Your suggestion (\`${id}\`) has been **${statusText}** in ${interaction.guild.name}.\n[Jump to suggestion](${msg.url})`,
+            embeds: [msg.embeds[0]]
+          });
+        } catch {
+        }
+      }
       await interaction.reply({ content: `✅ Suggestion \`${id}\` was ${statusText}.`, ephemeral: true });
     }
-else if (sub === 'delete') {
-  await msg.delete().catch(() => null);
-  await store.deleteSuggestion(id);
 
-  const embed = msg.embeds[0];
+    else if (sub === 'delete') {
+      await msg.delete().catch(() => null);
+      await store.deleteSuggestion(id);
 
-  await logChannel.send({
-    content: `Suggestion \`${id}\` was deleted by **${interaction.user.tag}**.\n**Reason:** ${reason}`,
-    embeds: [embed]
-  });
+      const embed = msg.embeds[0];
 
-  if (user) {
-    try {
-      await user.send({
-        content: `Your suggestion (\`${id}\`) has been **deleted** in ${interaction.guild.name}.\n**Reason:** ${reason}`,
+      await logChannel.send({
+        content: `Suggestion \`${id}\` was deleted by **${interaction.user.tag}**.\n**Reason:** ${reason}`,
         embeds: [embed]
       });
-    } catch {
-    }
-  }
 
-  await interaction.reply({ content: `🗑️ Suggestion \`${id}\` deleted.`, ephemeral: true });
-}
+      if (user) {
+        try {
+          await user.send({
+            content: `Your suggestion (\`${id}\`) has been **deleted** in ${interaction.guild.name}.\n**Reason:** ${reason}`,
+            embeds: [embed]
+          });
+        } catch {
+        }
+      }
+
+      await interaction.reply({ content: `🗑️ Suggestion \`${id}\` deleted.`, ephemeral: true });
+    }
   }
 };
